@@ -15,6 +15,6 @@ func main() {
 		fmt.Println("Inside block y:", y)
 		fmt.Println("Inside block x:", x)
 	}
-
+	y := 10
 	fmt.Println("Outside block y:", y)
 }
