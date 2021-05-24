@@ -9,16 +9,6 @@ import (
 	"math"
 )
 
-func main() {
-	circleShape := circle{
-		radius: 5,
-	}
-
-	//fmt.Println("Non-pointer value, non-pointer receiver:", info(circleShape))  // Non-pointer value. This will fail if there is a pointer receiver.
-	fmt.Println("Pointer value, non-pointer receiver:    ", info(&circleShape)) //Pointer value
-	fmt.Println("Pointer value, pointer receiver", info(&circleShape))          //Pointer value
-}
-
 type circle struct {
 	radius float64
 }
@@ -46,4 +36,16 @@ func info(s shape) results {
 		area:      s.area(),
 		perimeter: s.perimeter(),
 	}
+}
+
+func main() {
+	circleShape := circle{
+		radius: 5,
+	}
+
+	// Non-pointer value. This will fail if there is a pointer receiver.
+	// fmt.Println("Non-pointer value, non-pointer receiver:                     ", info(circleShape))
+
+	//Pointer value, area is non-pointer receiver, perimeter is pointer receiver
+	fmt.Println("Pointer value, non-pointer receiver and pointer receiver:    ", info(&circleShape))
 }

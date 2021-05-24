@@ -55,6 +55,9 @@ func main() {
 	fmt.Println(sa1)
 	sa1.speak()
 
+	fmt.Println(p1)
+	p1.speak()
+
 	bar(p1)
 	bar(sa1)
 }
