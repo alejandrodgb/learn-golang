@@ -1,29 +1,30 @@
+// Hands-on exercise #5
+// Fix the race condition you created in exercise #3 by using package atomic
+
 package main
 
 import (
 	"fmt"
+	"log"
 	"sync"
 	"sync/atomic"
 )
 
-func increment(counter *int64, wg *sync.WaitGroup) {
-	atomic.AddInt64(counter, 1)
-	//fmt.Println("Counter:", atomic.LoadInt64(counter))
+var incrementer int64
+var wg sync.WaitGroup
+
+func increment() {
+	atomic.AddInt64(&incrementer, 1)
+	log.Println(atomic.LoadInt64(&incrementer))
 	wg.Done()
 }
 
 func main() {
-	var counter int64 = 0
-	const adds = 100
 
-	var wg sync.WaitGroup
-	wg.Add(adds)
-
-	for i := 0; i < adds; i++ {
-		go increment(&counter, &wg)
-		//fmt.Println(counter)
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go increment()
 	}
-
 	wg.Wait()
-	fmt.Println(counter)
+	fmt.Println(incrementer)
 }

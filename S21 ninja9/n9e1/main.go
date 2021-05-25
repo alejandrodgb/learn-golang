@@ -2,44 +2,65 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"sync"
 )
 
-func multiply(wg *sync.WaitGroup, x ...float64) {
-	fmt.Println("Enter multiply")
-	var counter float64 = 1
-	for _, value := range x {
-		counter *= value
-		//fmt.Println("Loop:", i, "\tCounter:", counter)
-	}
-	wg.Done()
-	fmt.Println("Multiplying:", counter)
+var wg sync.WaitGroup
 
+func sum(l []int) (int, error) {
+	if len(l) == 0 {
+		return 0, fmt.Errorf("Empty list")
+	}
+	var result int
+	for _, v := range l {
+		result = result + v
+	}
+	log.Printf("Sum = %d for list %d", result, l)
+	wg.Done()
+	return result, nil
 }
 
-func sum(x ...float64) {
-	fmt.Println("Enter sum")
-	var counter float64
-	for _, value := range x {
-		counter += value
-		//fmt.Println("Loop:", i, "\tCounter:", counter)
+func product(l []int) (int, error) {
+	if len(l) == 0 {
+		return 0, fmt.Errorf("Empty list")
 	}
-	fmt.Println("Sum:", counter)
+	var result int = 1
+	for _, v := range l {
+		result = result * v
+	}
+	log.Printf("Product = %d for list %d", result, l)
+	wg.Done()
+	return result, nil
+}
+
+func sumProduct(l []int, w []int) (int, error) {
+	if len(l) != len(w) {
+		return 0, fmt.Errorf("Lists must be equal length")
+	} else if len(l) == 0 {
+		return 0, fmt.Errorf("Empty list")
+	}
+	var result int
+	for i := 0; i < len(l); i++ {
+		temp := l[i] * w[i]
+		result = result + temp
+	}
+	log.Printf("sumProduct = %d for list %d and weights %d", result, l, w)
+	wg.Done()
+	return result, nil
 }
 
 func main() {
-	var wg sync.WaitGroup
-	//fmt.Println("Routines", runtime.NumGoroutine())
 
-	wg.Add(1)
-	go multiply(&wg, 1, 2, 3, 4)
-	//fmt.Println("Routines", runtime.NumGoroutine())
+	list := []int{}
 
-	sum(1, 2, 3, 4)
-	//fmt.Println("Routines", runtime.NumGoroutine())
-
+	for i := 1; i < 10; i++ {
+		wg.Add(3)
+		list = append(list, i)
+		//fmt.Println(list)
+		go sum(list)
+		go product(list)
+		go sumProduct(list, list)
+	}
 	wg.Wait()
 }
-
-// 50048371023 - electricity
-// 50048371048 - water

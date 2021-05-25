@@ -5,18 +5,16 @@ import (
 )
 
 type person struct {
-	first string
-	last  string
-	age   int
-	lang  string
-}
-
-func (p *person) speak() {
-	fmt.Println("Person", p.first, " speaks", p.lang)
+	name string
+	age  int
 }
 
 type human interface {
 	speak()
+}
+
+func (p *person) speak() {
+	fmt.Println("Hola")
 }
 
 func saySomething(h human) {
@@ -24,12 +22,6 @@ func saySomething(h human) {
 }
 
 func main() {
-	p1 := person{
-		first: "John",
-		last:  "Doe",
-		age:   33,
-		lang:  "English",
-	}
-
+	p1 := person{"Adam", 33}
 	saySomething(&p1)
 }

@@ -1,3 +1,7 @@
+// Hands-on exercise #4
+// Fix the race condition you created in the previous exercise by using a mutex
+// it makes sense to remove runtime.Gosched()
+
 package main
 
 import (
@@ -5,28 +9,25 @@ import (
 	"sync"
 )
 
-func increment(counter *int, wg *sync.WaitGroup, mu *sync.Mutex) {
+var incrementer int
+var wg sync.WaitGroup
+var mu sync.Mutex
+
+func increment() {
 	mu.Lock()
-	v := *counter
-	v++
-	*counter = v
+	v := incrementer
+	v = v + 1
+	incrementer = v
 	mu.Unlock()
 	wg.Done()
 }
 
 func main() {
-	counter := 0
-	const adds = 100
 
-	var wg sync.WaitGroup
-	var mu sync.Mutex
-	wg.Add(adds)
-
-	for i := 0; i < adds; i++ {
-		go increment(&counter, &wg, &mu)
-		//fmt.Println(counter)
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go increment()
 	}
-
 	wg.Wait()
-	fmt.Println(counter)
+	fmt.Println(incrementer)
 }
