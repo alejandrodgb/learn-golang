@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func send(e, o, q chan<- int) {
+func send(e, o chan<- int, q chan<- bool) {
 	for i := 1; i < 11; i++ {
 		if i%2 == 0 {
 			e <- i
@@ -10,20 +10,21 @@ func send(e, o, q chan<- int) {
 			o <- i
 		}
 	}
-	// These two lines have to be commented because closed channels will send zero when queried
-	//close(e)
-	//close(o)
-	q <- 0
+	close(q)
 }
 
-func receive(e, o, q <-chan int) {
+func receive(e, o <-chan int, q <-chan bool) {
 	for {
 		select {
 		case v := <-e:
 			fmt.Println("From the eve channel:", v)
 		case v := <-o:
 			fmt.Println("From the odd channel:", v)
-		case v := <-q:
+		case v, ok := <-q:
+			if !ok {
+				fmt.Println("From the quit channel", v, ok)
+				return
+			}
 			fmt.Println("From the quit channel:", v)
 			return
 		}
@@ -33,7 +34,7 @@ func receive(e, o, q <-chan int) {
 func main() {
 	eve := make(chan int)
 	odd := make(chan int)
-	quit := make(chan int)
+	quit := make(chan bool)
 
 	// Send
 	go send(eve, odd, quit)
