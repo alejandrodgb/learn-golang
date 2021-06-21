@@ -9,7 +9,7 @@ import "fmt"
 
 func main() {
 	c := make(chan int)
-	const totalGoroutines = 10
+	const totalGoroutines = 2
 	const counter = 10
 
 	for i := 0; i < totalGoroutines; i++ {
